@@ -1,0 +1,46 @@
+#compdef aws
+
+# AWS-supplied completion seems to be bash only
+# (documentation includes zsh installation which however merely invokes
+# the 'complete' function from bashcompinit)
+
+_aws-s3() {
+  _arguments \
+    ':command:(configure ls rm cp sync)' \
+    '*:file:_files' \
+    && return
+  return 1
+}
+
+_aws() {
+  if [[ $service == aws ]]; then
+    local curcontext=$curcontext state
+    _arguments -C \
+      --profile+:: \
+      '(-): :->command' \
+      '(-)*:: :->option-or-argument' && return
+    case $state in
+      (command)
+        compadd s3
+        return
+        ;;
+      (option-or-argument)
+        curcontext=${curcontext%:*:*}:aws-$words[1]:
+        integer ret=1
+	if ! _call_function ret _aws-$words[1]; then
+	  if [[ $words[1] = \!* ]]; then
+	    words[1]=${words[1]##\!}
+	    _normal && return
+	  elif zstyle -T :completion:$curcontext: use-fallback; then
+	    _default && return
+	  else
+	    _message "unknown sub-command: $words[1]"
+	  fi
+        fi
+        return ret
+        ;;
+    esac
+  fi
+}
+
+_aws

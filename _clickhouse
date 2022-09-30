@@ -1,0 +1,54 @@
+#compdef clickhouse
+
+# TODO
+# - hostnames
+
+_clickhouse-client() {
+  _arguments -s -w \
+    --help \
+    --version \
+    --send_logs_level \
+    --echo \
+    --ignore-error \
+    --verbose \
+    {-t,--time} \
+    {-n,--multiquery} \
+    {-m,--multiline} \
+    --query_id+:: \
+    {-h,--host}+:: \
+    {-q,--query}+:: \
+    && return
+  return 1
+}
+
+_clickhouse() {
+  if [[ $service == clickhouse ]]; then
+    local curcontext=$curcontext state
+    _arguments -C \
+      '(-): :->command' \
+      '(-)*:: :->option-or-argument' && return
+    case $state in
+      (command)
+        compadd client
+        return
+        ;;
+      (option-or-argument)
+        curcontext=${curcontext%:*:*}:clickhouse-$words[1]:
+        integer ret=1
+	if ! _call_function ret _clickhouse-$words[1]; then
+	  if [[ $words[1] = \!* ]]; then
+	    words[1]=${words[1]##\!}
+	    _normal && return
+	  elif zstyle -T :completion:$curcontext: use-fallback; then
+	    _default && return
+	  else
+	    _message "unknown sub-command: $words[1]"
+	  fi
+        fi
+        return ret
+        ;;
+    esac
+  fi
+}
+
+_clickhouse

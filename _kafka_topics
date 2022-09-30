@@ -1,0 +1,22 @@
+#compdef kafka-topics.sh
+
+# TODO
+# - config name=value syntax
+# - bootstrap-server hostname and host:port,... syntax
+
+_arguments \
+  --help \
+  --version \
+  --bootstrap-server+:: \
+  --config+:: \
+  --list \
+  --create \
+  --alter \
+  --delete \
+  --describe \
+  --topic \
+  --partitions+:: \
+  --replication-factor+:: \
+  && return
+
+return 1

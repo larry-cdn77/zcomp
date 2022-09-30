@@ -1,0 +1,14 @@
+#compdef zkCli.sh
+
+# TODO
+# - server hostname and host:port syntax
+
+_arguments \
+  -server+:: \
+  -timeout+:: \
+  -client-configuration \
+  -r'[readonly]' \
+  -waitforconnection \
+  && return
+
+return 1

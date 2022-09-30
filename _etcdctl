@@ -1,0 +1,15 @@
+#compdef etcdctl
+
+# TODO
+# - endpoints hostnames
+# - get command where prefix/keys-only appear
+# - member subcommands
+
+_arguments \
+  --endpoints=-:: \
+  ':command:(get member)' \
+  --prefix \
+  --keys-only \
+  && return
+
+return 1
