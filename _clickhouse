@@ -1,10 +1,13 @@
 #compdef clickhouse
 
 # TODO
-# - hostnames
+# - formats
 
 _clickhouse-client() {
-  _arguments -s -w \
+  local state ret=1
+
+  # note space for message with a specific action, eg `-h+: :->hosts'
+  _arguments -s -w -C \
     --help \
     --version \
     --send_logs_level \
@@ -14,15 +17,22 @@ _clickhouse-client() {
     {-t,--time} \
     {-n,--multiquery} \
     {-m,--multiline} \
+    --limit+:: \
     --query_id+:: \
-    {-h,--host}+:: \
+    --format+:: \
+    {-h,--host}'+: :->host' \
     {-q,--query}+:: \
-    && return
-  return 1
+    && ret=0
+
+  if [[ $state = host ]] ; then
+    _alternative 'hosts:remote host name:_ssh_hosts' && ret=0
+  fi
+
+  return ret
 }
 
 _clickhouse() {
-  if [[ $service == clickhouse ]]; then
+  if [[ $service == clickhouse ]] ; then
     local curcontext=$curcontext state
     _arguments -C \
       '(-): :->command' \
@@ -35,11 +45,11 @@ _clickhouse() {
       (option-or-argument)
         curcontext=${curcontext%:*:*}:clickhouse-$words[1]:
         integer ret=1
-	if ! _call_function ret _clickhouse-$words[1]; then
-	  if [[ $words[1] = \!* ]]; then
+	if ! _call_function ret _clickhouse-$words[1] ; then
+	  if [[ $words[1] = \!* ]] ; then
 	    words[1]=${words[1]##\!}
 	    _normal && return
-	  elif zstyle -T :completion:$curcontext: use-fallback; then
+	  elif zstyle -T :completion:$curcontext: use-fallback ; then
 	    _default && return
 	  else
 	    _message "unknown sub-command: $words[1]"
