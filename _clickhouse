@@ -17,6 +17,7 @@ _clickhouse-client() {
     {-t,--time} \
     {-n,--multiquery} \
     {-m,--multiline} \
+    --receive_timeout+:: \
     --limit+:: \
     --query_id+:: \
     --format+:: \
