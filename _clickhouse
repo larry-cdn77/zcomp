@@ -26,7 +26,7 @@ _clickhouse-client() {
     && ret=0
 
   if [[ $state = host ]] ; then
-    _alternative 'hosts:remote host name:_ssh_hosts' && ret=0
+    _alternative 'hosts: :_ssh_hosts' && ret=0
   fi
 
   return ret

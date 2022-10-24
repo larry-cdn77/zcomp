@@ -1,15 +1,22 @@
 #compdef etcdctl
 
-# TODO
-# - endpoints hostnames
-# - get command where prefix/keys-only appear
-# - member subcommands
+# TODO member subcommands
+
+local state ret=1
 
 _arguments \
-  --endpoints=-:: \
+  --endpoints=-': :->hostport' \
   ':command:(get member)' \
   --prefix \
   --keys-only \
-  && return
+  && ret=0
 
-return 1
+if [[ $state = hostport ]] ; then
+  if compset -P '*:'; then
+    _message -e port-numbers 'port number (default 2379)'
+  else
+    _wanted hosts expl host _ssh_hosts -S: || ret=1
+  fi
+fi
+
+return $ret
