@@ -32,6 +32,14 @@ _clickhouse-client() {
   return ret
 }
 
+_clickhouse-format() {
+  return 0
+}
+
+_clickhouse-local() {
+  return 0
+}
+
 _clickhouse() {
   if [[ $service == clickhouse ]] ; then
     local curcontext=$curcontext state
@@ -41,6 +49,8 @@ _clickhouse() {
     case $state in
       (command)
         compadd client
+        compadd format
+        compadd local
         return
         ;;
       (option-or-argument)
