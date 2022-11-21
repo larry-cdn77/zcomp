@@ -1,0 +1,29 @@
+#compdef kafka-consumer-groups.sh
+
+# TODO
+# - config name=value syntax
+# - bootstrap-server hostname and host:port,... syntax
+
+_arguments \
+  --help \
+  --version \
+  --verbose \
+  --bootstrap-server+:: \
+  --all-groups \
+  --all-topics \
+  --list \
+  --delete \
+  --delete-offsets \
+  --describe \
+  --execute \
+  --group+:: \
+  --members \
+  --offsets \
+  --reset-offsets \
+  --topic+:: \
+  --to-current \
+  --to-earliest \
+  --to-latest \
+  && return
+
+return 1
