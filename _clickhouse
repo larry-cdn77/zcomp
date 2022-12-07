@@ -10,7 +10,9 @@ _clickhouse-client() {
   _arguments -s -w -C \
     --help \
     --version \
-    --send_logs_level \
+    --send_logs_level+:: \
+    --ask-password \
+    {-u,--user}+:: \
     --echo \
     --ignore-error \
     --verbose \
@@ -21,12 +23,15 @@ _clickhouse-client() {
     --limit+:: \
     --query_id+:: \
     --format+:: \
+    --queries-file'+: :->files' \
     {-h,--host}'+: :->host' \
     {-q,--query}+:: \
     && ret=0
 
   if [[ $state = host ]] ; then
     _alternative 'hosts: :_ssh_hosts' && ret=0
+  elif [[ $state = files ]] ; then
+    _alternative 'files: :_files' && ret=0
   fi
 
   return ret
