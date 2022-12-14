@@ -42,7 +42,30 @@ _clickhouse-format() {
 }
 
 _clickhouse-local() {
-  return 0
+  local state ret=1
+
+  _arguments -s -w -C \
+    --help \
+    --version \
+    --send_logs_level+:: \
+    --echo \
+    --ignore-error \
+    --verbose \
+    {-t,--time} \
+    {-n,--multiquery} \
+    {-m,--multiline} \
+    --limit+:: \
+    --query_id+:: \
+    --format+:: \
+    --queries-file'+: :->files' \
+    {-q,--query}+:: \
+    && ret=0
+
+  if [[ $state = files ]] ; then
+    _alternative 'files: :_files' && ret=0
+  fi
+
+  return ret
 }
 
 _clickhouse() {
