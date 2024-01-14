@@ -1,14 +1,21 @@
 #compdef zkCli.sh
 
-# TODO
-# - server hostname and host:port syntax
+local ret=1
 
 _arguments \
-  -server+:: \
+  -server'+: :->hostport' \
   -timeout+:: \
   -client-configuration \
   -r'[readonly]' \
   -waitforconnection \
-  && return
+  && ret=0
 
-return 1
+if [[ $state = hostport ]] ; then
+  if compset -P '*:'; then
+    _message -e port-numbers 'port number (default 2181)'
+  else
+    _wanted hosts expl host _ssh_hosts -S: || ret=1
+  fi
+fi
+
+return $ret
