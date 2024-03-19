@@ -1,0 +1,15 @@
+#compdef kafka-console-producer.sh
+
+# TODO
+# - property name=value syntax
+# - bootstrap-server hostname and host:port,... syntax
+
+_arguments \
+  --help \
+  --version \
+  --bootstrap-server+:: \
+  --property+:: \
+  --topic+:: \
+  && return
+
+return 1

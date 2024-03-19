@@ -1,0 +1,20 @@
+#compdef kafka-console-consumer.sh
+
+# TODO
+# - property name=value syntax
+# - bootstrap-server hostname and host:port,... syntax
+
+_arguments \
+  --help \
+  --version \
+  --bootstrap-server+:: \
+  --from-beginning \
+  --group+:: \
+  --max-messages+:: \
+  --partition+:: \
+  --offset+:: \
+  --property+:: \
+  --topic+:: \
+  && return
+
+return 1
