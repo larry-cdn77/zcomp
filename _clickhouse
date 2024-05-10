@@ -15,12 +15,14 @@ _clickhouse-client() {
     {-u,--user}+:: \
     --echo \
     --ignore-error \
+    --interactive \
     --verbose \
     {-t,--time} \
     {-n,--multiquery} \
     {-m,--multiline} \
     --receive_timeout+:: \
     --limit+:: \
+    --database+:: \
     --query_id+:: \
     --format+:: \
     --queries-file'+: :->files' \
@@ -50,6 +52,7 @@ _clickhouse-local() {
     --send_logs_level+:: \
     --echo \
     --ignore-error \
+    --interactive \
     --verbose \
     {-t,--time} \
     {-n,--multiquery} \
