@@ -42,7 +42,13 @@ _clickhouse-client() {
 }
 
 _clickhouse-format() {
-  return 0
+  local state ret=1
+
+  _arguments -s -w -C \
+    --oneline \
+    && ret=0
+
+  return ret
 }
 
 _clickhouse-local() {
