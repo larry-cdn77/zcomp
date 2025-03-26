@@ -6,6 +6,7 @@
 
 _aws-s3() {
   _arguments \
+    --endpoint+:: \
     ':command:(configure ls rm cp sync)' \
     '*:file:_files' \
     && return
