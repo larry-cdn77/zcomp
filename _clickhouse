@@ -46,6 +46,7 @@ _clickhouse-format() {
 
   _arguments -s -w -C \
     --oneline \
+    --hilite \
     && ret=0
 
   return ret
