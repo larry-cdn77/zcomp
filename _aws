@@ -4,9 +4,25 @@
 # (documentation includes zsh installation which however merely invokes
 # the 'complete' function from bashcompinit)
 
+_find_aws_endpoint() {
+  if [[ -n $profile && -f $HOME/.aws/config ]] ; then
+    # note caret escape
+    grep $profile -A15 $HOME/.aws/config |
+      grep \^endpoint -m1 | \
+      cut -d= -f2 | awk '{print $1}' | \
+      sed 's/:/\\:/g'
+  fi
+}
+
+_s3_endpoint() {
+  extracted=$(_find_aws_endpoint)
+  #[[ -n $extracted ]] && _describe -t endpoint Endpoint extracted
+  [[ -n $extracted ]] && _values Endpoint $extracted
+}
+
 _aws-s3() {
   _arguments \
-    --endpoint+:: \
+    --endpoint+:Endpoint:_s3_endpoint \
     ':command:(configure ls rm cp sync)' \
     '*:file:_files' \
     && return
@@ -16,10 +32,15 @@ _aws-s3() {
 _aws() {
   if [[ $service == aws ]]; then
     local curcontext=$curcontext state
+    declare -A opt_args
     _arguments -C \
-      --profile+:: \
+      '--profile+:Profile:->profile' \
       '(-): :->command' \
       '(-)*:: :->option-or-argument' && return
+
+    # don't know how to retain opt_args and avoid this global variable
+    profile=${opt_args[--profile]:-}
+
     case $state in
       (command)
         compadd s3
