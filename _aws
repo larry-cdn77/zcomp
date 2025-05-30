@@ -4,10 +4,12 @@
 # (documentation includes zsh installation which however merely invokes
 # the 'complete' function from bashcompinit)
 
-_find_aws_endpoint() {
-  if [[ -n $profile && -f $HOME/.aws/config ]] ; then
+cfgfile=$HOME/.aws/config
+
+_s3_find_endpoint() {
+  if [[ -n $profile && -f $cfgfile ]] ; then
     # note caret escape
-    grep $profile -A15 $HOME/.aws/config |
+    grep \^"\[profile $profile\]" -A15 $cfgfile | \
       grep \^endpoint -m1 | \
       cut -d= -f2 | awk '{print $1}' | \
       sed 's/:/\\:/g'
@@ -15,16 +17,46 @@ _find_aws_endpoint() {
 }
 
 _s3_endpoint() {
-  extracted=$(_find_aws_endpoint)
-  #[[ -n $extracted ]] && _describe -t endpoint Endpoint extracted
+  extracted=$(_s3_find_endpoint)
+  # or: _describe -t endpoint Endpoint extracted
   [[ -n $extracted ]] && _values Endpoint $extracted
+}
+
+_s3_buckets() {
+  if [[ -n $profile && -f $cfgfile ]] ; then
+    buckets=($(grep \^"\[profile $profile\]" -A15 $cfgfile | \
+      grep \^buckets -m1 | \
+      cut -d= -f2 | awk '{print $1}' | \
+      tr , ' '))
+    compadd -qS '' "${buckets[@]}"
+  fi
+}
+
+_s3_remote() {
+  if compset -P 's3://' ; then
+    _alternative 'bucket::_s3_buckets'
+  fi
+}
+
+_s3_local_or_remote() {
+  _alternative \
+    'remote::_s3_remote' \
+    'local::_files' \
+    'dash::(-)' \
+    && return
+  return 1
+}
+
+_aws_profile() {
+  profiles=($(grep \^'\[profile' $cfgfile | tr -d '[]' | awk '{print $2}'))
+  compadd ${profiles[@]}
 }
 
 _aws-s3() {
   _arguments \
     --endpoint+:Endpoint:_s3_endpoint \
     ':command:(configure ls rm cp sync)' \
-    '*:file:_files' \
+    '*:file:_s3_local_or_remote' \
     && return
   return 1
 }
@@ -32,9 +64,9 @@ _aws-s3() {
 _aws() {
   if [[ $service == aws ]]; then
     local curcontext=$curcontext state
-    declare -A opt_args
+    local -A opt_args
     _arguments -C \
-      '--profile+:Profile:->profile' \
+      '--profile+:Profile:_aws_profile' \
       '(-): :->command' \
       '(-)*:: :->option-or-argument' && return
 
